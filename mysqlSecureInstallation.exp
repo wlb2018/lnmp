@@ -1,0 +1,73 @@
+#!/usr/bin/expect
+
+set timeout 30
+
+#expect定义和接收参数方式和bash不一样
+set rootPassword [lindex $argv 0]
+
+
+#弹出mysql安全配置向导，全部Y
+spawn mysql_secure_installation
+
+
+expect {
+
+"*Enter current password for root*" {send "\r"}
+
+}
+
+
+expect {
+
+"*Switch to unix_socket authentication*" {send "Y\r"}
+
+}
+
+
+expect {
+
+"*Change the root password*" {send "Y\r"}
+
+}
+
+
+expect {
+
+"New password*" {send "${rootPassword}\r"}
+
+}
+
+expect {
+
+"*Re-enter new password*" {send "${rootPassword}\r"}
+
+}
+
+expect {
+
+"*Remove anonymous users*" {send "Y\r"}
+
+}
+
+
+expect {
+
+"*Disallow root login remotely*" {send "Y\r"}
+
+}
+
+expect {
+
+"*Remove test database and access to it*" {send "Y\r"}
+
+}
+
+
+expect {
+
+"*Reload privilege tables now*" {send "Y\r"}
+
+}
+
+
+expect eof
