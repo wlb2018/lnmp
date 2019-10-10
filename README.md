@@ -2,6 +2,7 @@
 自动化安装、配置、最新版Nginx、PHP、Mariadb、Redis和phpMyadmin
 
 使用方法
+
 1.下载所有文件
 
 2.根据自己实际亲狂修改init.sh中的自定义变量
