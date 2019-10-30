@@ -94,6 +94,8 @@ cat >> /etc/nginx/nginx.conf <<EOF
 
 EOF
 
+mkdir -p /usr/share/nginx/${domain}
+
 cat >> /etc/nginx/nginx.conf <<'EOF'
         location / {
         index index.html index.htm index.php;
