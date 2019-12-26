@@ -57,10 +57,10 @@ yum -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
 
 yum -y install yum-utils
 
-yum-config-manager --enable remi-php73
+yum-config-manager --enable remi-php74
 
 
-yum -y install nginx php73 php-fpm php-opcache mariadb mariadb-client mariadb-server mysql-proxy redis php-mysqlnd php-redis php-gd php-mbstring vim wget mlocate psmisc openssl openssl-devel curl curl-devel ntpdate git composer phpMyAdmin expect screen
+yum -y install nginx php74 php-fpm php-opcache mariadb mariadb-client mariadb-server mysql-proxy redis php-mysqlnd php-redis php-gd php-mbstring vim wget mlocate psmisc openssl openssl-devel curl curl-devel ntpdate git composer phpMyAdmin expect screen
 
 #备份配置文件
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
