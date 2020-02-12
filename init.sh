@@ -60,7 +60,7 @@ yum -y install yum-utils
 yum-config-manager --enable remi-php74
 
 
-yum -y install nginx php74 php-fpm php-opcache mariadb mariadb-client mariadb-server mysql-proxy redis php-mysqlnd php-redis php-gd php-mbstring vim wget mlocate psmisc openssl openssl-devel curl curl-devel ntpdate git composer phpMyAdmin expect screen
+yum -y install nginx php74 php-fpm php-opcache mariadb mariadb-client mariadb-server mysql-proxy redis php-mysqlnd php-redis php-gd php-mbstring vim wget mlocate psmisc openssl openssl-devel curl curl-devel ntpdate git composer nodejs phpMyAdmin expect screen
 
 #备份配置文件
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
@@ -220,11 +220,6 @@ EOF
 sed -i '102d' /usr/share/phpMyAdmin/libraries/config.default.php
 sed -i "102i "'$'"cfg['blowfish_secret'] = '"`date | md5sum | awk '{print $1}'`"';" /usr/share/phpMyAdmin/libraries/config.default.php
 
-#开放80、443端口
-firewall-cmd --zone=public --add-port=80/tcp --permanent
-firewall-cmd --zone=public --add-port=443/tcp --permanent
-firewall-cmd --reload
-
 
 #设置开机项并立即启动服务
 systemctl enable firewalld.service
@@ -241,6 +236,12 @@ systemctl start php-fpm.service
 systemctl start mariadb.service
 systemctl start redis.service
 systemctl start crond.service
+
+
+#开放80、443端口
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+firewall-cmd --zone=public --add-port=443/tcp --permanent
+firewall-cmd --reload
 
 
 #vim和vi默认显示行号和不区分大小写，会提示错误不用管
@@ -278,5 +279,5 @@ chmod 744 ./createNewUser.exp
 #导入phpMyadmin数据库，创建可以远程登录用户
 ./createNewUser.exp $rootPassword $name $password
 
-
+updatedb
 reboot
