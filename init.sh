@@ -21,7 +21,9 @@ rootPassword='123456'
 name='test'
 password='123456'
 
+phpVersion=74
 ############ 自定义变量结束 #########
+releasever=$(rpm -q centos-release | awk -F '[-.]' '{print $3}')
 
 
 #查看生成的公钥，复制到github/码云公钥中，才能使用git clone项目
@@ -44,14 +46,16 @@ curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 yum --exclude=kernel* -y update
 
 #从remi源安装最新版php、redis等
-yum -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+yum -y install https://rpms.remirepo.net/enterprise/remi-release-${releasever}.rpm
 
 yum -y install yum-utils
 
-yum-config-manager --enable remi-php74
+yum-config-manager --enable remi-php${phpVersion}
 
+yum -y install nginx php${phpVersion} php-fpm php-opcache mariadb mariadb-server php-mysqlnd phpMyAdmin mysql-proxy redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
+yum -y install screen expect vim wget mlocate psmisc ntpdate git composer nodejs
 
-yum -y install nginx php74 php-fpm php-opcache mariadb mariadb-client mariadb-server mysql-proxy redis php-mysqlnd php-redis php-gd php-mbstring vim wget mlocate psmisc openssl openssl-devel curl curl-devel ntpdate git composer nodejs phpMyAdmin expect screen
+pecl channel-update pecl.php.net
 
 #备份配置文件
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
