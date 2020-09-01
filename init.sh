@@ -39,18 +39,9 @@ enabled=1
 gpgkey=https://nginx.org/keys/nginx_signing.key
 EOF
 
-cat > /etc/yum.repos.d/MariaDB.repo <<'EOF'
-[mariadb]
-name = MariaDB
-baseurl = https://mirrors.aliyun.com/mariadb/yum/10.4/centos7-amd64/
-gpgkey = https://mirrors.aliyun.com/mariadb/yum/RPM-GPG-KEY-MariaDB
-gpgcheck = 1
-enabled = 1
-EOF
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 
-
-yum -y update
-
+yum --exclude=kernel* -y update
 
 #从remi源安装最新版php、redis等
 yum -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
