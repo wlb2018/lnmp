@@ -6,23 +6,31 @@
 env='production'
 #env='development'
 
+#生成github/码云用到的私钥公钥对，用于克隆项目
+email='test@qq.com'
 
 #Nginx监听域名（也是thinkphp项目目录名）、端口
 domain='test.com'
 port='80'
 
-#生成github/码云用到的私钥公钥对，用于克隆项目
-email='test@qq.com'
+#php版本
+phpVersion=74
 
-#设置root用户密码
+#MariaDB端口和root用户密码
+mariadbPort='3306'
 rootPassword='123456'
 
-#创建可远程登录Mysql用户
+#创建可远程登录MariaDB用户
 name='test'
 password='123456'
 
-phpVersion=74
+#redis端口和密码
+redisPort='6379'
+redisPassword='123456'
+
+
 ############ 自定义变量结束 #########
+
 releasever=$(rpm -q centos-release | awk -F '[-.]' '{print $3}')
 
 
@@ -46,6 +54,7 @@ curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 yum --exclude=kernel* -y update
 
 #从remi源安装最新版php、redis等
+yum -y install epel-release
 yum -y install https://rpms.remirepo.net/enterprise/remi-release-${releasever}.rpm
 
 yum -y install yum-utils
@@ -53,7 +62,7 @@ yum -y install yum-utils
 yum-config-manager --enable remi-php${phpVersion}
 
 yum -y install nginx php${phpVersion} php-fpm php-opcache mariadb mariadb-server php-mysqlnd phpMyAdmin mysql-proxy redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
-yum -y install screen expect vim wget mlocate psmisc ntpdate git composer nodejs
+yum -y install screen expect vim wget mlocate psmisc chrony git composer nodejs
 
 pecl channel-update pecl.php.net
 
@@ -61,6 +70,7 @@ pecl channel-update pecl.php.net
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 cp /etc/php.ini /etc/php.ini.bak
 cp /etc/my.cnf /etc/my.cnf.bak
+cp /etc/redis.conf /etc/redis.conf.bak
 
 
 #修改Nginx配置
@@ -130,6 +140,30 @@ cat >> /etc/nginx/nginx.conf <<'EOF'
 }
 EOF
 
+mkdir -p /usr/share/nginx/${domain}/public
+
+cat > /usr/share/nginx/${domain}/public/index.html <<EOF
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+
+
+    </style>
+</head>
+<body>
+nginx安装配置成功
+
+<script>
+
+
+</script>
+</body>
+</html>
+EOF
+
 
 #修改php配置
 sed -i "s#;date.timezone =#date.timezone = Asia/Shanghai#g" /etc/php.ini
@@ -138,7 +172,6 @@ sed -i "s#upload_max_filesize = 2M#upload_max_filesize = 128M#g" /etc/php.ini
 sed -i "s#max_file_uploads = 20#max_file_uploads = 128#g" /etc/php.ini
 sed -i "s#post_max_size = 8M#post_max_size = 128M#g" /etc/php.ini
 sed -i "s#session.cookie_httponly =#session.cookie_httponly = 1#g" /etc/php.ini
-sed -i "s#short_open_tag = Off#short_open_tag = On#g" /etc/php.ini
 
 
 if [ "$env" == 'development' ]
@@ -169,9 +202,24 @@ EOF
 
 
 #修改MariaDB配置
-echo "[mysqld]" >> /etc/my.cnf
-echo "lower_case_table_names = 1" >> /etc/my.cnf
-echo "max_connections = 1024" >> /etc/my.cnf
+cat >> /etc/my.cnf <<EOF
+[mysqld]
+port=${mariadbPort}
+
+lower_case_table_names = 1 
+max_connections = 1024
+local-infile=0
+skip_symbolic_links=yes
+symbolic-links=0
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+EOF
+
+
+#修改redis配置
+sed -i "s#port 6379#port ${redisPort}#g" /etc/redis.conf
+sed -i "s/# requirepass foobared/requirepass ${redisPassword}/g" /etc/redis.conf
 
 
 #监听子域名phpMyAdmin，如果为本地虚拟机也需要为此子域名绑定hosts映射
@@ -223,6 +271,7 @@ systemctl enable php-fpm.service
 systemctl enable mariadb.service
 systemctl enable redis.service
 systemctl enable crond.service
+systemctl enable chronyd.service
 
 
 systemctl start firewalld.service
@@ -231,6 +280,7 @@ systemctl start php-fpm.service
 systemctl start mariadb.service
 systemctl start redis.service
 systemctl start crond.service
+systemctl start chronyd.service
 
 
 #开放80、443端口
@@ -258,21 +308,21 @@ echo "alias egrep='egrep -ni --color=auto'" >> /etc/bashrc
 source /etc/bashrc
 
 
-#更新系统时间
-ntpdate -u time.windows.com
-date
-
-
 chmod 744 ./mysqlSecureInstallation.exp
 chmod 744 ./createNewUser.exp
 
 
 #弹出mysql安全配置向导
-./mysqlSecureInstallation.exp $rootPassword
+./mysqlSecureInstallation.exp ${rootPassword}
 
 
 #导入phpMyadmin数据库，创建可以远程登录用户
-./createNewUser.exp $rootPassword $name $password
+./createNewUser.exp ${rootPassword} ${name} ${password}
 
 updatedb
+
+date
+
+echo '初始化完毕'
+
 reboot
