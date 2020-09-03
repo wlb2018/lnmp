@@ -61,7 +61,7 @@ yum -y install yum-utils
 
 yum-config-manager --enable remi-php${phpVersion}
 
-yum -y install nginx php${phpVersion} php-fpm php-opcache mariadb mariadb-server php-mysqlnd phpMyAdmin mysql-proxy redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
+yum -y install nginx php${phpVersion} php-fpm php-opcache mariadb mariadb-server php-mysqlnd phpMyAdmin mysql-proxy php-pdo php-json redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
 yum -y install screen expect vim wget mlocate psmisc chrony git composer nodejs
 
 pecl channel-update pecl.php.net
@@ -90,6 +90,13 @@ fi
 
 cat >> /etc/nginx/nginx.conf <<EOF
 
+    server {
+        listen       ${port};
+        listen       [::]:${port};
+        server_name  www.${domain};
+        return 301 https://${domain};
+    }
+	
     server {
 
         listen       ${port} default_server;
@@ -322,6 +329,10 @@ chmod 744 ./createNewUser.exp
 updatedb
 
 date
+
+free
+
+df -hl
 
 echo '初始化完毕'
 
