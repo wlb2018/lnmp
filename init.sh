@@ -51,6 +51,7 @@ EOF
 
 curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 
+#升级软件不升级Linux内核
 yum --exclude=kernel* -y update
 
 #从remi源安装最新版php、redis等
@@ -330,7 +331,7 @@ updatedb
 
 date
 
-free
+free -mh
 
 df -hl
 
