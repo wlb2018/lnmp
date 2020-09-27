@@ -1,5 +1,5 @@
 # lnmp
-Centos7自动化安装、配置、最新版Nginx、PHP、Mariadb、Redis和phpMyadmin
+Centos7自动化安装、配置最新版Nginx、PHP、Mariadb、Redis和phpMyadmin
 
 使用方法
 
@@ -7,6 +7,6 @@ Centos7自动化安装、配置、最新版Nginx、PHP、Mariadb、Redis和phpMy
 
 2.根据自己实际情况修改init.sh中的自定义变量
 
-3.linux下执行init.sh即可
+3.linux下给init.sh添加执行权限，然后执行
 
-4.等待软件下载，大概300多MB，安装完毕后会自动重启
+4.自动下载、安装、配置软件，配置完毕后自动重启，所用时间仅与网速有关
