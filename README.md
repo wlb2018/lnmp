@@ -13,7 +13,7 @@ Centos7自动化安装、配置最新版Nginx、PHP、Mariadb、Redis和phpMyadm
 
 可选项：
 
-5.配置https，参见
+5.配置https(https必须为域名，不支持ip形式)，参见
 https://certbot.eff.org/lets-encrypt/centosrhel7-nginx
 
 6.Mysql备份，参见
