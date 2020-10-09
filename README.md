@@ -12,6 +12,7 @@ Centos7自动化安装、配置最新版Nginx、PHP、Mariadb、Redis和phpMyadm
 4.自动下载、安装、配置软件，配置完毕后自动重启，所用时间仅与网速有关（需下载300MB左右的软件）
 
 可选项
+
 5.配置https，参见
 https://certbot.eff.org/lets-encrypt/centosrhel7-nginx
 
