@@ -14,7 +14,7 @@ domain='test.com'
 port='80'
 
 #php版本
-phpVersion=74
+phpVersion=80
 
 #MariaDB端口和root用户密码
 mariadbPort='3306'
