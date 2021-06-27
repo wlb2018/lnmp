@@ -75,11 +75,6 @@ cp /etc/redis.conf /etc/redis.conf.bak
 
 
 #修改Nginx配置
-sed -i "s/#gzip  on;/gzip  on;/g" /etc/nginx/nginx.conf
-sed -i '$d' /etc/nginx/nginx.conf
-
-
-
 if [ "$env" == 'development' ]
 then
     sed -i "/gzip  on;/a\    server_tokens on;" /etc/nginx/nginx.conf
@@ -87,89 +82,97 @@ else
     sed -i "/gzip  on;/a\    server_tokens off;" /etc/nginx/nginx.conf
 fi
 
+publicPath=/usr/share/nginx/${domain}/public
+#每个虚拟主机配置1个独立文件
+cat >> /etc/nginx/conf.d/${domain}.conf <<EOF
+server {
 
-
-cat >> /etc/nginx/nginx.conf <<EOF
-
-    server {
-        listen       ${port};
-        listen       [::]:${port};
-        server_name  www.${domain};
-        return 301 https://${domain};
-    }
-	
-    server {
-
-        listen       ${port} default_server;
-        listen       [::]:${port} default_server;
-        server_name  ${domain};
-        root         /usr/share/nginx/${domain}/public;
+	listen       ${port};
+	listen       [::]:${port};
+	server_name  ${domain};
+	root         ${publicPath};
 
 EOF
+cat >> /etc/nginx/conf.d/${domain}.conf <<'EOF'
+	location / {
+	index index.html index.htm index.php;
+		if (!-e $request_filename) {
+			rewrite ^/(.*)$ /index.php/$1 last;
+			break;
+		}
+	}
 
-mkdir -p /usr/share/nginx/${domain}
+	location ~ \.php(.*)$ {
+		fastcgi_pass   127.0.0.1:9000;
+		fastcgi_index  index.php;
+		fastcgi_split_path_info ^(.+\.php)(.*)$;
+		fastcgi_param   PATH_INFO $fastcgi_path_info;
+		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+		fastcgi_param  PATH_TRANSLATED  $document_root$fastcgi_path_info;
+		include        fastcgi_params;
+	}   
 
-cat >> /etc/nginx/nginx.conf <<'EOF'
-        location / {
-        index index.html index.htm index.php;
-        if (!-e $request_filename) {
-            rewrite ^/(.*)$ /index.php/$1 last;
-            break;
-        }
-        }
+	location ~ .*\.(jpg|png|gif|jpeg|webm|rar|zip|7z)$ {
+		expires 7d; 
+	}
 
-        location ~ \.php(.*)$ {
-            fastcgi_pass   127.0.0.1:9000;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info ^(.+\.php)(.*)$;
-            fastcgi_param   PATH_INFO $fastcgi_path_info;
-            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-            fastcgi_param  PATH_TRANSLATED  $document_root$fastcgi_path_info;
-            include        fastcgi_params;
-        }
+	location ~ .*\.(js|css)$ {
+		expires 1d; 
+	}
 
-        location ~ .*\.(jpg|png|gif|jpeg|webm|rar|zip|7z)$ {
-            expires 7d;
-        }
+	error_page 404 /404.html;
+		location = /40x.html {
+	}
 
-        location ~ .*\.(js|css)$ {
-            expires 1d;
-        }
-
-        error_page 404 /404.html;
-            location = /40x.html {
-        }
-
-        error_page 500 502 503 504 /50x.html;
-            location = /50x.html {
-        }
-
-    }
+	error_page 500 502 503 504 /50x.html;
+		location = /50x.html {
+	}
 }
 EOF
 
-mkdir -p /usr/share/nginx/${domain}/public
+mkdir -p ${publicPath}
 
-cat > /usr/share/nginx/${domain}/public/index.html <<EOF
-<!DOCTYPE html>
-<html lang="zh-Hans-CN">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-    <style>
+cat > ${publicPath}/index.php <<EOF
+<?php
+phpinfo();
 
+EOF
 
-    </style>
-</head>
-<body>
-nginx安装配置成功
+#监听子域名phpMyAdmin
+cat >> /etc/nginx/conf.d/phpMyAdmin.conf <<EOF
+server {
+        listen   80; 
+        server_name phpmyadmin.${domain};
+        root /usr/share/phpMyAdmin;
 
-<script>
+EOF
+cat >> /etc/nginx/conf.d/phpMyAdmin.conf <<'EOF'
+    location / { 
+        index  index.php;
+    }   
 
+    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
+        access_log        off;
+        expires           30d;
+    }   
 
-</script>
-</body>
-</html>
+    location ~ /\.ht {
+        deny  all;
+    }   
+
+    location ~ /(libraries|setup/frames|setup/libs) {
+        deny all;
+        return 404;
+    }   
+
+    location ~ \.php$ {
+        include /etc/nginx/fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		include        fastcgi_params;
+    }   
+}
 EOF
 
 
@@ -228,43 +231,6 @@ EOF
 #修改redis配置
 sed -i "s#port 6379#port ${redisPort}#g" /etc/redis.conf
 sed -i "s/# requirepass foobared/requirepass ${redisPassword}/g" /etc/redis.conf
-
-
-#监听子域名phpMyAdmin，如果为本地虚拟机也需要为此子域名绑定hosts映射
-cat >> /etc/nginx/conf.d/phpMyAdmin.conf <<EOF
-server {
-        listen   80; 
-        server_name phpmyadmin.${domain};
-        root /usr/share/phpMyAdmin;
-
-EOF
-cat >> /etc/nginx/conf.d/phpMyAdmin.conf <<'EOF'
-    location / { 
-        index  index.php;
-    }   
-
-    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
-        access_log        off;
-        expires           30d;
-    }   
-
-    location ~ /\.ht {
-        deny  all;
-    }   
-
-    location ~ /(libraries|setup/frames|setup/libs) {
-        deny all;
-        return 404;
-    }   
-
-    location ~ \.php$ {
-        include /etc/nginx/fastcgi_params;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME /usr/share/phpMyAdmin$fastcgi_script_name;
-    }   
-}
-EOF
 
 
 #cookie加密秘钥
@@ -336,5 +302,3 @@ free -mh
 df -hl
 
 echo '初始化完毕'
-
-reboot
