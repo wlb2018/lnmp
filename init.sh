@@ -62,8 +62,11 @@ yum -y install yum-utils
 
 yum-config-manager --enable remi-php${phpVersion}
 
-yum -y install nginx php${phpVersion} php-fpm php-opcache mariadb mariadb-server php-mysqlnd phpMyAdmin mysql-proxy php-pdo php-json redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
-yum -y install screen expect vim wget mlocate psmisc chrony git composer nodejs
+yum -y install nginx php${phpVersion} php-fpm php-opcache php-devel mariadb mariadb-server php-mysqlnd php-pdo php-json redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
+yum -y install screen expect vim wget mlocate psmisc git nodejs
+
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
 
 pecl channel-update pecl.php.net
 
@@ -83,6 +86,7 @@ else
 fi
 
 publicPath=/usr/share/nginx/${domain}/public
+
 #每个虚拟主机配置1个独立文件
 cat >> /etc/nginx/conf.d/${domain}.conf <<EOF
 server {
@@ -137,44 +141,6 @@ cat > ${publicPath}/index.php <<EOF
 phpinfo();
 
 EOF
-
-#监听子域名phpMyAdmin
-cat >> /etc/nginx/conf.d/phpMyAdmin.conf <<EOF
-server {
-        listen   80; 
-        server_name phpmyadmin.${domain};
-        root /usr/share/phpMyAdmin;
-
-EOF
-cat >> /etc/nginx/conf.d/phpMyAdmin.conf <<'EOF'
-    location / { 
-        index  index.php;
-    }   
-
-    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
-        access_log        off;
-        expires           30d;
-    }   
-
-    location ~ /\.ht {
-        deny  all;
-    }   
-
-    location ~ /(libraries|setup/frames|setup/libs) {
-        deny all;
-        return 404;
-    }   
-
-    location ~ \.php$ {
-        include /etc/nginx/fastcgi_params;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		include        fastcgi_params;
-    }   
-}
-EOF
-
 
 #修改php配置
 sed -i "s#;date.timezone =#date.timezone = Asia/Shanghai#g" /etc/php.ini
@@ -234,11 +200,6 @@ sed -i "s#port 6379#port ${redisPort}#g" /etc/redis.conf
 sed -i "s/# requirepass foobared/requirepass ${redisPassword}/g" /etc/redis.conf
 
 
-#cookie加密秘钥
-sed -i '102d' /usr/share/phpMyAdmin/libraries/config.default.php
-sed -i "102i "'$'"cfg['blowfish_secret'] = '"`date | md5sum | awk '{print $1}'`"';" /usr/share/phpMyAdmin/libraries/config.default.php
-
-
 #设置开机项并立即启动服务
 systemctl enable firewalld.service
 systemctl enable nginx.service
@@ -246,7 +207,6 @@ systemctl enable php-fpm.service
 systemctl enable mariadb.service
 systemctl enable redis.service
 systemctl enable crond.service
-systemctl enable chronyd.service
 
 
 systemctl start firewalld.service
@@ -255,7 +215,6 @@ systemctl start php-fpm.service
 systemctl start mariadb.service
 systemctl start redis.service
 systemctl start crond.service
-systemctl start chronyd.service
 
 
 #开放80、443端口
@@ -291,7 +250,7 @@ chmod 744 ./createNewUser.exp
 ./mysqlSecureInstallation.exp ${rootPassword}
 
 
-#导入phpMyadmin数据库，创建可以远程登录用户
+#创建可以远程登录用户
 ./createNewUser.exp ${rootPassword} ${name} ${password}
 
 updatedb
