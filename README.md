@@ -18,9 +18,3 @@ https://certbot.eff.org/lets-encrypt/centosrhel7-nginx
 
 6.Mysql备份，参见
 https://github.com/teddysun/across/blob/master/backup.sh
-
-自用简陋版导航网站
-
-https://dongxinanbeizhong.com
-
-https://724coding.com
