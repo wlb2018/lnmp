@@ -56,8 +56,10 @@ yum --exclude=kernel* -y update
 
 #从remi源安装最新版php、redis等
 yum -y install epel-release
-yum -y install centos-release-scl
 yum -y install remi-release
+yum -y install http://rpms.remirepo.net/enterprise/remi-release-${releasever}.rpm
+yum -y install centos-release-scl
+
 
 yum -y install yum-utils
 
