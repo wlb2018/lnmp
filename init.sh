@@ -246,11 +246,11 @@ chmod 744 ./mysqlSecureInstallation.exp
 chmod 744 ./createNewUser.exp
 
 
-#弹出mysql安全配置向导
+#Mysql安全配置向导
 ./mysqlSecureInstallation.exp ${rootPassword}
 
 
-#创建可以远程登录用户
+#创建Mysql远程登录用户
 ./createNewUser.exp ${rootPassword} ${name} ${password}
 
 updatedb
