@@ -18,3 +18,6 @@ https://certbot.eff.org/lets-encrypt/centosrhel7-nginx
 
 6.Mysql备份，参见
 https://github.com/teddysun/across/blob/master/backup.sh
+
+7.通过windows任务计划自动执行freefilesync生成的.ffs_batch文件定时拉取备份数据到本地
+https://freefilesync.org/
