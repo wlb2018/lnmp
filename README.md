@@ -1,5 +1,5 @@
 # lnmp
-Centos7自动化安装、配置最新版Nginx、PHP、Mariadb、Redis和phpMyadmin
+Centos7自动化安装、配置最新版Nginx、PHP、Mariadb、Redis
 
 使用方法：
 
