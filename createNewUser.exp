@@ -21,14 +21,7 @@ expect {
 #? * [] ^ \(都是特殊字符，如果想作为字符串匹配，需要转义
 expect {
 
-"*MariaDB*none*" {send "source /usr/share/phpMyAdmin/sql/create_tables.sql;\r"}
-
-}
-
-
-expect {
-
-"*MariaDB*phpmyadmin*" {send "grant all on *.* to '$name'@'%' identified by '$password' with grant option;flush privileges;exit;\r"}
+"*MariaDB*phpmyadmin*" {send "grant all on *.* to '$name'@'%' identified by '$password' with grant option;install soname 'ha_mroonga';flush privileges;exit;\r"}
 
 }
 
