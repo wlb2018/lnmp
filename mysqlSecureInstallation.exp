@@ -7,7 +7,7 @@ set rootPassword [lindex $argv 0]
 
 
 #弹出mysql安全配置向导，全部Y
-spawn mysql_secure_installation
+spawn mariadb-secure-installation
 
 
 expect {
