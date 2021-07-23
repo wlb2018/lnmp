@@ -59,7 +59,7 @@ yum -y install epel-release
 yum -y install centos-release-scl
 yum -y install remi-release
 yum -y install https://repo.ius.io/ius-release-el${releasever}.rpm
-yum -y install http://rpms.remirepo.net/enterprise/remi-release-${releasever}.rpm
+yum -y install https://rpms.remirepo.net/enterprise/remi-release-${releasever}.rpm
 rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 yum -y install https://www.elrepo.org/elrepo-release-${releasever}.el${releasever}.elrepo.noarch.rpm
 yum -y localinstall --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${releasever}.noarch.rpm
@@ -67,6 +67,7 @@ yum -y localinstall --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion
 sed -i "s#enabled=0#enabled=1#" /etc/yum.repos.d/remi-php${phpVersion}.repo
 yum -y install yum-utils
 yum-config-manager --enable remi-php${phpVersion}
+yum repolist enabled
 
 yum -y install nginx php${phpVersion} php-fpm php-opcache php-devel mariadb mariadb-server php-mysqlnd php-pdo php-json redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
 yum -y install screen expect vim wget mlocate psmisc git nodejs
