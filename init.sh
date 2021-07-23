@@ -64,9 +64,7 @@ rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 yum -y install https://www.elrepo.org/elrepo-release-${releasever}.el${releasever}.elrepo.noarch.rpm
 yum -y localinstall --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${releasever}.noarch.rpm
 
-sed -i "s#enabled=0#enabled=1#" /etc/yum.repos.d/remi-php${phpVersion}.repo
-yum -y install yum-utils
-yum-config-manager --enable remi-php${phpVersion}
+sed -i "0,/enabled=0/s/enabled=0/enabled=1/" /etc/yum.repos.d/remi-php${phpVersion}.repo
 
 yum repolist enabled
 yum clean all
