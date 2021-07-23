@@ -58,7 +58,6 @@ yum --exclude=kernel* -y update
 yum -y install epel-release
 yum -y install remi-release
 yum -y install http://rpms.remirepo.net/enterprise/remi-release-${releasever}.rpm
-yum -y install centos-release-scl
 
 
 yum -y install yum-utils
