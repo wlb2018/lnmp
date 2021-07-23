@@ -1,0 +1,29 @@
+#!/usr/bin/expect
+
+spawn pecl install swoole
+
+expect {
+
+"*enable sockets supports*" {send "no\r"}
+
+}
+
+expect {
+
+"*enable openssl support*" {send "yes\r"}
+
+}
+
+expect {
+
+"*enable http2 support*" {send "yes\r"}
+
+}
+
+expect {
+
+"*enable mysqlnd support*" {send "no\r"}
+
+}
+
+expect eof
