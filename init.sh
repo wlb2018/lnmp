@@ -67,7 +67,10 @@ yum -y localinstall --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion
 sed -i "s#enabled=0#enabled=1#" /etc/yum.repos.d/remi-php${phpVersion}.repo
 yum -y install yum-utils
 yum-config-manager --enable remi-php${phpVersion}
+
 yum repolist enabled
+yum clean all
+yum makecache
 
 yum -y install nginx php${phpVersion} php-fpm php-opcache php-devel mariadb mariadb-server php-mysqlnd php-pdo php-json redis php-redis php-gd php-mbstring openssl openssl-devel curl curl-devel php-pear 
 yum -y install screen expect vim wget mlocate psmisc git nodejs
