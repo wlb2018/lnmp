@@ -169,16 +169,8 @@ fi
 
 
 #开启opcache会导致php代码修改后不能及时生效，rm -rf /tmp/*php-fpm*来删除opcache
-cat >> /etc/php.ini <<'EOF'
-
-[opcache]
-opcache.enable = 1
-opcache.enable_cli = 1
-opcache.file_cache = /tmp
-opcache.huge_code_pages = 1
-opcache.jit = 1205
-opcache.jit_buffer_size = 64M
-EOF
+echo opcache.jit = 1205 >> /etc/php.d/*opcache.ini
+echo opcache.jit_buffer_size = 64M >> /etc/php.d/*opcache.ini
 
 
 #修改MariaDB配置
