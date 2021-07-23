@@ -35,7 +35,7 @@ releasever=$(rpm -q centos-release | awk -F '[-.]' '{print $3}')
 
 #关闭selinux
 setenforce 0
-sed -i 's/SELINUX=enforcing/SELINUX=disabled' /etc/selinux/config
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
 #查看生成的公钥，复制到github/码云公钥中，才能使用git clone项目
 ssh-keygen -t rsa -C "$email" -P '' -f ~/.ssh/id_rsa
