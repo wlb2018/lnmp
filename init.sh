@@ -81,6 +81,11 @@ mv composer.phar /usr/local/bin/composer
 
 pecl channel-update pecl.php.net
 
+#安装swoole扩展
+chmod 744 ./swoole.exp
+./swoole.exp
+echo "extension=swoole" >> /etc/php.d/*sockets.ini
+
 #备份配置文件
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 cp /etc/php.ini /etc/php.ini.bak
