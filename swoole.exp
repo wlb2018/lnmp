@@ -1,5 +1,7 @@
 #!/usr/bin/expect
 
+set timeout -1
+
 spawn pecl install swoole
 
 expect {
