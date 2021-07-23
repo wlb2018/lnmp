@@ -26,4 +26,15 @@ expect {
 
 }
 
+expect {
+
+"*enable json support*" {send "yes\r"}
+
+}
+
+expect {
+
+"*enable curl support*" {send "yes\r"}
+
+}
 expect eof
