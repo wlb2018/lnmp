@@ -91,6 +91,7 @@ cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 cp /etc/php.ini /etc/php.ini.bak
 cp /etc/my.cnf /etc/my.cnf.bak
 cp /etc/redis.conf /etc/redis.conf.bak
+cp /etc/supervisord.conf /etc/supervisord.conf.bak
 
 
 #修改Nginx配置
