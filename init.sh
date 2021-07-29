@@ -130,8 +130,13 @@ cat >> /etc/nginx/conf.d/${domain}.conf <<'EOF'
 		fastcgi_param   PATH_INFO $fastcgi_path_info;
 		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
 		fastcgi_param  PATH_TRANSLATED  $document_root$fastcgi_path_info;
+		fastcgi_param  PHP_VALUE "open_basedir=$document_root/:/tmp/:/proc/";
 		include        fastcgi_params;
-	}   
+	}
+	
+	location ~ ^/(uploads|assets)/.*\.(php5?|jsp|html?)$ {
+                deny all;
+        }   
 
 	location ~ .*\.(jpg|png|gif|jpeg|webm|rar|zip|7z)$ {
 		expires 7d; 
