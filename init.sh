@@ -123,7 +123,7 @@ cat >> /etc/nginx/conf.d/${domain}.conf <<'EOF'
 		}
 	}
 
-	location ~ \.php(.*)$ {
+	location ~* \.php(.*)$ {
 		fastcgi_pass   127.0.0.1:9000;
 		fastcgi_index  index.php;
 		fastcgi_split_path_info ^(.+\.php)(.*)$;
@@ -134,15 +134,15 @@ cat >> /etc/nginx/conf.d/${domain}.conf <<'EOF'
 		include        fastcgi_params;
 	}
 	
-	location ~ ^/(uploads|assets)/.*\.(php5?|jsp|html?)$ {
+	location ~* ^/(uploads|assets)/.*\.(php5?|jsp|html?)$ {
                 deny all;
         }   
 
-	location ~ .*\.(jpg|png|gif|jpeg|webm|rar|zip|7z)$ {
+	location ~* .*\.(jpg|png|gif|jpeg|webm|rar|zip|7z)$ {
 		expires 7d; 
 	}
 
-	location ~ .*\.(js|css)$ {
+	location ~* .*\.(js|css)$ {
 		expires 1d; 
 	}
 
